@@ -71,69 +71,18 @@ String StateParking ;// occupied or unoccupied
 
 //-------- wifi variables --------//
 const char* ssid = "FLATBOX-DEMO";
-const char* password = "Flatbox'Isertec";
+const char* password = "Flatbox-Isertec";
 
 
 //-------- Global variables --------//
 boolean NTP = false,  b;// this variables are using to compare the states
 
 //-------- HandleUpdate function receive the data, parse and update the info --------//
-void handleUpdate(byte* payload) {
-  StaticJsonBuffer<1024> jsonBuffer;
-  JsonObject& root = jsonBuffer.parseObject((char*)payload);
-  if (!root.success()) {
-    Serial.println(F("handleUpdate: payload parse FAILED"));
-    return;
-  }
-  Serial.println(F("handleUpdate payload:"));
-  root.prettyPrintTo(Serial);
-  Serial.println();
-  JsonObject& d = root["d"];
-  JsonArray& fields = d["fields"];
-  for (JsonArray::iterator it = fields.begin();
-       it != fields.end();
-       ++it) {
-    JsonObject& field = *it;
-    const char* fieldName = field["field"];
-    if (strcmp (fieldName, "metadata") == 0) {
-      JsonObject& fieldValue = field["value"];
-      if (fieldValue.containsKey("myName")) {
-        const char* nodeID = "";
-        nodeID = fieldValue["myName"];
-        myName = String(nodeID);
-        Serial.print(F("myName:"));
-        Serial.println(myName);
-      }
-    }
-    if (strcmp (fieldName, "deviceInfo") == 0) {
-      JsonObject& fieldValue = field["value"];
-      if (fieldValue.containsKey("fwVersion")) {
-        FWVERSION = fieldValue["fwVersion"];
-        Serial.print(F("fwVersion:"));
-        Serial.println(FWVERSION);
-      }
-    }
-  }
-}
+ 
 
 //-------- Callback function. Receive the payload from MQTT topic and translate it to handle  --------//
 
 void callback(char* topic, byte* payload, unsigned int payloadLength) {
-  Serial.print(F("callback invoked for topic: "));
-  Serial.println(topic);
-  if (strcmp (responseTopic, topic) == 0) {
-    return; // just print of response for now
-  }
-
-  if (strcmp (rebootTopic, topic) == 0) {
-    Serial.println(F("Rebooting..."));
-    delay(1000);
-    ESP.restart();
-  }
-
-  if (strcmp (updateTopic, topic) == 0) {
-    handleUpdate(payload);
-  }
 }
 
 //-------- mqttConnect fuunction. Connect to mqtt Server  --------//
@@ -151,26 +100,7 @@ void mqttConnect() {
 
 //-------- initManageDevice function. suscribe topics, Send metadata and supports to bluemix --------//
 void initManagedDevice() {
-  if (client.subscribe("iotdm-1/response")) {
-    Serial.println(F("subscribe to responses OK"));
-  }
-  else {
-    Serial.println(F("subscribe to responses FAILED"));
-  }
-
-  if (client.subscribe(rebootTopic)) {
-    Serial.println(F("subscribe to reboot OK"));
-  }
-  else {
-    Serial.println(F("subscribe to reboot FAILED"));
-  }
-
-  if (client.subscribe("iotdm-1/device/update")) {
-    Serial.println(F("subscribe to update OK"));
-  }
-  else {
-    Serial.println(F("subscribe to update FAILED"));
-  }
+ 
   int a = 0;
   if (a == 0) {
     StaticJsonBuffer<200> jsonBuffer;
@@ -388,7 +318,13 @@ void setup() {
   mqttConnect();
   // delay(15000);
   initManagedDevice();
-  if (ultrasonicsensor() < 120) {
+  int average;
+  for(int i =0;i<10;i++){
+    average+=ultrasonicsensor();
+  }
+  average/=10;
+  
+  if (average < 120) {
     b = true;
 
   } else {
