@@ -77,10 +77,8 @@ const char* password = "Flatbox-Isertec";
 //-------- Global variables --------//
 boolean NTP = false,  b;// this variables are using to compare the states
 
-//-------- HandleUpdate function receive the data, parse and update the info --------//
- 
 
-//-------- Callback function. Receive the payload from MQTT topic and translate it to handle  --------//
+//-------- Callback function. Receive the payload from MQTT topic and translate it to handle this is not necessary this time   --------//
 
 void callback(char* topic, byte* payload, unsigned int payloadLength) {
 }
@@ -252,8 +250,6 @@ void checkTime () {
 
 
 
-//-------- manager function. Configure the wifi connection if not connect put in mode AP--------//
-
 
 //-------- publishData function. Publish the data to MQTT server, the payload should not be bigger than 45 characters name field and data field counts. --------//
 
@@ -280,7 +276,7 @@ void publishData() {
   }
 }
 
-
+//-------- function to connect to the wifi change the ssid and password --------//
 void setup_wifi() {
 
   delay(10);
