@@ -23,7 +23,7 @@ const int NTP_PACKET_SIZE = 48; // NTP time is in the first 48 bytes of message
 byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming & outgoing packets
 
 String ISO8601; //String to show the timestamp
-
+ 
 
 //-------- IBM Bluemix Info ---------//
 #define ORG "qnu3pg"
